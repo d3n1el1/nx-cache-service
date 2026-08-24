@@ -1,14 +1,36 @@
 package main
 
 import (
-	"fmt"
+	"log/slog"
 	"net/http"
+	"os"
+
+	"nxCacheService/internal/api"
+	"nxCacheService/internal/cache"
+)
+
+const (
+	addr     = "localhost:8080"
+	cacheDir = ".nx-cache-service"
 )
 
 func main() {
-	const PORT = 8080
+	log := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
-	fmt.Println("Starting the NX Cache Service on port", PORT)
+	store, err := cache.NewDisk(cacheDir)
+	if err != nil {
+		log.Error("open cache", "err", err)
+		os.Exit(1)
+	}
 
-	_ = http.ListenAndServe("localhost:8080", nil)
+	srv := &http.Server{
+		Addr:    addr,
+		Handler: api.NewServer(store, api.AllowAll{}, log),
+	}
+
+	log.Info("nx cache service listening", "addr", addr, "dir", store.Root())
+	if err := srv.ListenAndServe(); err != nil {
+		log.Error("server stopped", "err", err)
+		os.Exit(1)
+	}
 }
