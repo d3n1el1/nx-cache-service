@@ -11,3 +11,6 @@
 /dataSources.local.xml
 
 /.nx-cache-service/
+
+/bin/
+/coverage.out
