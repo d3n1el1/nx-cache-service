@@ -1,10 +1,11 @@
 BINARY := nx-cache-service
 BIN_DIR := bin
 PKG := ./cmd/nx-cache-service
+SPEC := api/openapi.yaml
 GO ?= go
 
 .DEFAULT_GOAL := build
-.PHONY: all build run test test-race cover fmt fmt-check vet tidy check clean
+.PHONY: all build run test test-race cover fmt fmt-check vet tidy spec-lint check clean
 
 all: check build
 
@@ -35,6 +36,9 @@ fmt-check:
 
 vet:
 	$(GO) vet ./...
+
+spec-lint:
+	npx --yes @redocly/cli@latest lint $(SPEC)
 
 tidy:
 	$(GO) mod tidy
