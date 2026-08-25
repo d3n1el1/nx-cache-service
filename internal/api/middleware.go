@@ -3,18 +3,19 @@ package api
 import (
 	"log/slog"
 	"net/http"
+	"nxCacheService/internal/auth"
 )
 
-type Authenticator interface {
-	Authenticate(token string) bool
-}
-
-type AllowAll struct{}
-
-func (AllowAll) Authenticate(string) bool { return true }
-
-func requireAuth(auth Authenticator, next http.Handler) http.Handler {
+func requireTokenAuth(authenticator auth.StaticTokenAuthenticator, next http.Handler, mode auth.AllowedAction) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token := r.Header.Get("Authorization")
+		allowed := authenticator.IsAllowed(token, mode)
+
+		if !allowed {
+			_ = writeErrorResponse(w, http.StatusUnauthorized, "Unauthorized", nil)
+			return
+		}
+
 		next.ServeHTTP(w, r)
 	})
 }

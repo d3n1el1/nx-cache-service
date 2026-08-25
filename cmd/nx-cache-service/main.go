@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"nxCacheService/internal/api"
+	"nxCacheService/internal/auth"
 	"nxCacheService/internal/cache"
 )
 
@@ -25,7 +26,7 @@ func main() {
 
 	srv := &http.Server{
 		Addr:    addr,
-		Handler: api.NewServer(store, api.AllowAll{}, log),
+		Handler: api.NewServer(store, auth.StaticTokenAuthenticator{}, log),
 	}
 
 	log.Info("nx cache service listening", "addr", addr, "dir", store.Root())

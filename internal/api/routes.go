@@ -3,13 +3,14 @@ package api
 import (
 	"log/slog"
 	"net/http"
+	"nxCacheService/internal/auth"
 
 	"nxCacheService/internal/cache"
 )
 
-func addRoutes(mux *http.ServeMux, store cache.Store, auth Authenticator, log *slog.Logger) {
-	mux.Handle("GET /v1/cache/{hash}", requireAuth(auth, handleCacheGet(store, log)))
-	mux.Handle("PUT /v1/cache/{hash}", requireAuth(auth, handleCachePut(store, log)))
+func addRoutes(mux *http.ServeMux, store cache.Store, authorization auth.StaticTokenAuthenticator, log *slog.Logger) {
+	mux.Handle("GET /v1/cache/{hash}", requireTokenAuth(authorization, handleCacheGet(store, log), auth.Read))
+	mux.Handle("PUT /v1/cache/{hash}", requireTokenAuth(authorization, handleCachePut(store, log), auth.Write))
 
 	mux.Handle("GET /health", handleHealth())
 
