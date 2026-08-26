@@ -18,3 +18,9 @@ func handleCachePut(store cache.Store, log *slog.Logger) http.Handler {
 		_ = writeErrorResponse(w, http.StatusNotImplemented, "Not implemented", nil)
 	})
 }
+
+func handleCacheFlush(store cache.Store, log *slog.Logger) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_ = writeErrorResponse(w, http.StatusNotImplemented, "Not implemented", nil)
+	})
+}

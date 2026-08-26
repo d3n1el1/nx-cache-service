@@ -11,6 +11,7 @@ import (
 func addRoutes(mux *http.ServeMux, store cache.Store, authorization Authenticator, log *slog.Logger) {
 	mux.Handle("GET /project/{project}/v1/cache/{hash}", requireStaticTokenAuth(authorization, handleCacheGet(store, log), auth.Read))
 	mux.Handle("PUT /project/{project}/v1/cache/{hash}", requireStaticTokenAuth(authorization, handleCachePut(store, log), auth.Write))
+	mux.Handle("DELETE /project/{project}/flush", requireStaticTokenAuth(authorization, handleCacheFlush(store, log), auth.Write))
 
 	mux.Handle("GET /health", handleHealth())
 
