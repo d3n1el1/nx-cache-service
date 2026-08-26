@@ -9,7 +9,6 @@ func (key EnvKey) GetValue() string {
 }
 
 const (
-	Env           EnvKey = "ENV"
 	CiToken       EnvKey = "CI_TOKEN"
 	ReadOnlyToken EnvKey = "READ_ONLY_TOKEN"
 )

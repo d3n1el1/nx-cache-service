@@ -18,6 +18,12 @@ const (
 func main() {
 	log := slog.New(slog.NewTextHandler(os.Stdout, nil))
 
+	authenticator, err := auth.NewStaticTokenAuthenticator()
+	if err != nil {
+		log.Error("configure auth", "err", err)
+		os.Exit(1)
+	}
+
 	store, err := cache.NewDisk(cacheDir)
 	if err != nil {
 		log.Error("open cache", "err", err)
@@ -26,10 +32,14 @@ func main() {
 
 	srv := &http.Server{
 		Addr:    addr,
-		Handler: api.NewServer(store, auth.StaticTokenAuthenticator{}, log),
+		Handler: api.NewServer(store, authenticator, log),
 	}
 
-	log.Info("nx cache service listening", "addr", addr, "dir", store.Root())
+	log.Info("nx cache service listening",
+		"addr", addr,
+		"dir", store.Root(),
+		"readOnlyToken", authenticator.HasReadOnlyToken())
+
 	if err := srv.ListenAndServe(); err != nil {
 		log.Error("server stopped", "err", err)
 		os.Exit(1)

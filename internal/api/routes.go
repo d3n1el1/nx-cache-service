@@ -8,9 +8,9 @@ import (
 	"nxCacheService/internal/cache"
 )
 
-func addRoutes(mux *http.ServeMux, store cache.Store, authorization auth.StaticTokenAuthenticator, log *slog.Logger) {
-	mux.Handle("GET /v1/cache/{hash}", requireTokenAuth(authorization, handleCacheGet(store, log), auth.Read))
-	mux.Handle("PUT /v1/cache/{hash}", requireTokenAuth(authorization, handleCachePut(store, log), auth.Write))
+func addRoutes(mux *http.ServeMux, store cache.Store, authorization Authenticator, log *slog.Logger) {
+	mux.Handle("GET /v1/cache/{hash}", requireStaticTokenAuth(authorization, handleCacheGet(store, log), auth.Read))
+	mux.Handle("PUT /v1/cache/{hash}", requireStaticTokenAuth(authorization, handleCachePut(store, log), auth.Write))
 
 	mux.Handle("GET /health", handleHealth())
 

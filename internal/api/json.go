@@ -6,16 +6,13 @@ import (
 )
 
 func writeJSON(w http.ResponseWriter, status int, v any) error {
-	var response any
-
 	if v == nil {
-		response = map[string]string{}
-	} else {
-		response = v
+		v = struct{}{}
 	}
 
-	b, err := json.Marshal(response)
+	b, err := json.Marshal(v)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		return err
 	}
 
@@ -37,11 +34,5 @@ func writeErrorResponse(w http.ResponseWriter, status int, reason string, additi
 		response["additionalData"] = additionalData
 	}
 
-	err := writeJSON(w, status, response)
-
-	if err != nil {
-		return err
-	}
-
-	return err
+	return writeJSON(w, status, response)
 }
