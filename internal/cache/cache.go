@@ -12,6 +12,6 @@ var (
 )
 
 type Store interface {
-	Get(ctx context.Context, hash string) (body io.ReadCloser, size int64, err error)
-	Put(ctx context.Context, hash string, r io.Reader) error
+	Get(ctx context.Context, project string, hash string) (body io.ReadCloser, size int64, err error)
+	Put(ctx context.Context, project string, hash string, r io.Reader) error
 }
