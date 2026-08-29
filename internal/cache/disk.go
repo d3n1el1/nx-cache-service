@@ -67,3 +67,13 @@ func (d *Disk) Put(ctx context.Context, project string, hash string, r io.Reader
 
 	return f.Close()
 }
+
+func (d *Disk) Flush(ctx context.Context, project string) error {
+	dir := path.Join(d.root, project)
+
+	if err := os.RemoveAll(dir); err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -86,6 +86,11 @@ func handleCacheFlush(store cache.Store, log *slog.Logger) http.Handler {
 			return
 		}
 
-		_ = writeErrorResponse(w, http.StatusNotImplemented, "Not implemented", nil)
+		if err := store.Flush(r.Context(), r.PathValue("project")); err != nil {
+			log.Error("cache flush failed", "project", r.PathValue("project"), "err", err)
+			_ = writeErrorResponse(w, http.StatusBadRequest, err.Error(), nil)
+		}
+
+		_ = writeJSON(w, http.StatusOK, struct{}{})
 	})
 }
