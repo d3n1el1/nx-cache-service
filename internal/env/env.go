@@ -12,6 +12,7 @@ const (
 	CiToken       EnvKey = "CI_TOKEN"
 	ReadOnlyToken EnvKey = "READ_ONLY_TOKEN"
 
+	Addr       EnvKey = "ADDR"
 	CacheStore EnvKey = "CACHE_STORE"
 
 	TlsCertFile EnvKey = "TLS_CERT_FILE"

@@ -16,8 +16,8 @@ import (
 )
 
 const (
-	addr     = "localhost:8080"
-	cacheDir = ".nx-cache-service"
+	defaultAddr = "localhost:8080"
+	cacheDir    = ".nx-cache-service"
 )
 
 func main() {
@@ -33,6 +33,11 @@ func main() {
 	if err != nil {
 		log.Error("open cache", "err", err)
 		os.Exit(1)
+	}
+
+	addr := env.Addr.GetValue()
+	if len(addr) == 0 {
+		addr = defaultAddr
 	}
 
 	certFile, keyFile, err := tlsFiles()
