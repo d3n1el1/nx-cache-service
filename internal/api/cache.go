@@ -67,11 +67,14 @@ func handleCachePut(store cache.Store, log *slog.Logger) http.Handler {
 		err := store.Put(r.Context(), project, hash, r.Body)
 
 		if err != nil {
-			if !errors.Is(err, cache.ErrExists) {
-				log.Error("cache already exists and cannot be overriden", "project", project, "hash", hash, "err", err)
+			if errors.Is(err, cache.ErrExists) {
+				_ = writeErrorResponse(w, http.StatusConflict, "Conflict", nil)
+				return
 			}
 
-			_ = writeErrorResponse(w, http.StatusConflict, err.Error(), nil)
+			log.Error("cache put failed", "project", project, "hash", hash, "err", err)
+			_ = writeErrorResponse(w, http.StatusInternalServerError, "Internal Server Error", nil)
+
 			return
 		}
 
@@ -81,14 +84,18 @@ func handleCachePut(store cache.Store, log *slog.Logger) http.Handler {
 
 func handleCacheFlush(store cache.Store, log *slog.Logger) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := validatePathParam("project", r.PathValue("project")); err != nil {
+		project := r.PathValue("project")
+
+		if err := validatePathParam("project", project); err != nil {
 			_ = writeErrorResponse(w, http.StatusBadRequest, err.Error(), nil)
 			return
 		}
 
-		if err := store.Flush(r.Context(), r.PathValue("project")); err != nil {
-			log.Error("cache flush failed", "project", r.PathValue("project"), "err", err)
-			_ = writeErrorResponse(w, http.StatusBadRequest, err.Error(), nil)
+		if err := store.Flush(r.Context(), project); err != nil {
+			log.Error("cache flush failed", "project", project, "err", err)
+			_ = writeErrorResponse(w, http.StatusInternalServerError, "Internal Server Error", nil)
+
+			return
 		}
 
 		_ = writeJSON(w, http.StatusOK, struct{}{})
