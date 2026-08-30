@@ -28,11 +28,13 @@ func handleCacheGet(store cache.Store, log *slog.Logger) http.Handler {
 		body, size, err := store.Get(r.Context(), project, hash)
 
 		if err != nil {
-			if !errors.Is(err, cache.ErrNotFound) {
-				log.Error("cache get failed", "project", project, "hash", hash, "err", err)
+			if errors.Is(err, cache.ErrNotFound) {
+				_ = writeErrorResponse(w, http.StatusNotFound, "Not Found", nil)
+				return
 			}
 
-			_ = writeErrorResponse(w, http.StatusNotFound, "Not Found", nil)
+			log.Error("cache get failed", "project", project, "hash", hash, "err", err)
+			_ = writeErrorResponse(w, http.StatusInternalServerError, "Internal Server Error", nil)
 
 			return
 		}
