@@ -4,5 +4,6 @@
 .nx-cache-service
 bin
 coverage.out
+docker
 Dockerfile
 docker-compose.yaml

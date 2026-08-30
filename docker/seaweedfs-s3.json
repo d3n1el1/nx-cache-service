@@ -1,0 +1,14 @@
+{
+  "identities": [
+    {
+      "name": "nx-cache-service",
+      "credentials": [
+        {
+          "accessKey": "nxcachedev",
+          "secretKey": "nxcachedevsecret"
+        }
+      ],
+      "actions": ["Admin", "Read", "Write", "List"]
+    }
+  ]
+}

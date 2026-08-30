@@ -7,7 +7,15 @@ services:
     environment:
       CI_TOKEN: ${CI_TOKEN:-dev-ci-token}
       READ_ONLY_TOKEN: ${READ_ONLY_TOKEN:-}
-      CACHE_STORE: ${CACHE_STORE:-disk}
+      CACHE_STORE: ${CACHE_STORE:-s3}
+      S3_REGION: us-east-1
+      S3_ACCESS_KEY_ID: nxcachedev
+      S3_SECRET_ACCESS_KEY: nxcachedevsecret
+      S3_BUCKET_NAME: nx-cache
+      S3_ENDPOINT_URL: http://seaweedfs:8333
+    depends_on:
+      seaweedfs-init:
+        condition: service_completed_successfully
     volumes:
       - cache:/app/.nx-cache-service
     healthcheck:
@@ -18,5 +26,30 @@ services:
       start_period: 5s
     restart: unless-stopped
 
+  seaweedfs:
+    image: chrislusf/seaweedfs:4.44
+    command: server -s3 -s3.config=/etc/seaweedfs/s3.json -dir=/data
+    ports:
+      - "8333:8333"
+    volumes:
+      - ./docker/seaweedfs-s3.json:/etc/seaweedfs/s3.json:ro
+      - seaweedfs:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8333/status"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
+
+  seaweedfs-init:
+    image: chrislusf/seaweedfs:4.44
+    depends_on:
+      seaweedfs:
+        condition: service_healthy
+    entrypoint: ["sh", "-c", "echo 's3.bucket.create -name nx-cache' | weed shell -master=seaweedfs:9333"]
+    restart: "no"
+
 volumes:
   cache:
+  seaweedfs:
