@@ -1,0 +1,8 @@
+.git
+.gitignore
+.idea
+.nx-cache-service
+bin
+coverage.out
+Dockerfile
+docker-compose.yaml
