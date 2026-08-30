@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -33,20 +35,49 @@ func main() {
 		os.Exit(1)
 	}
 
+	certFile, keyFile, err := tlsFiles()
+	if err != nil {
+		log.Error("configure tls", "err", err)
+		os.Exit(1)
+	}
+
 	srv := &http.Server{
-		Addr:    addr,
-		Handler: api.NewServer(store, authenticator, log),
+		Addr:      addr,
+		Handler:   api.NewServer(store, authenticator, log),
+		TLSConfig: &tls.Config{MinVersion: tls.VersionTLS12},
 	}
 
 	log.Info("nx cache service listening",
 		"addr", addr,
 		"cache", location,
+		"tls", len(certFile) > 0,
 		"readOnlyToken", authenticator.HasReadOnlyToken())
 
-	if err := srv.ListenAndServe(); err != nil {
+	if len(certFile) > 0 {
+		err = srv.ListenAndServeTLS(certFile, keyFile)
+	} else {
+		err = srv.ListenAndServe()
+	}
+
+	if err != nil {
 		log.Error("server stopped", "err", err)
 		os.Exit(1)
 	}
+}
+
+func tlsFiles() (string, string, error) {
+	certFile := env.TlsCertFile.GetValue()
+	keyFile := env.TlsKeyFile.GetValue()
+
+	if len(certFile) == 0 && len(keyFile) == 0 {
+		return "", "", nil
+	}
+
+	if len(certFile) == 0 || len(keyFile) == 0 {
+		return "", "", errors.New("TLS_CERT_FILE and TLS_KEY_FILE must be set together")
+	}
+
+	return certFile, keyFile, nil
 }
 
 func openStore(ctx context.Context) (cache.Store, string, error) {

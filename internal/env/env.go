@@ -14,6 +14,9 @@ const (
 
 	CacheStore EnvKey = "CACHE_STORE"
 
+	TlsCertFile EnvKey = "TLS_CERT_FILE"
+	TlsKeyFile  EnvKey = "TLS_KEY_FILE"
+
 	S3Region          EnvKey = "S3_REGION"
 	S3AccessKeyId     EnvKey = "S3_ACCESS_KEY_ID"
 	S3SecretAccessKey EnvKey = "S3_SECRET_ACCESS_KEY"
