@@ -202,6 +202,8 @@ make clean      # remove bin/
 CI (`.github/workflows/ci.yml`) runs `make check` and `make build` on every push to `master` and on
 pull requests, then builds the Docker image with Buildx.
 
+See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for code style, how to verify a change, and the pull request process.
+
 ## Project layout
 
 ```
