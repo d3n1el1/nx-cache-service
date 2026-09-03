@@ -200,9 +200,9 @@ make clean      # remove bin/
 ```
 
 CI (`.github/workflows/ci.yml`) runs `make check` and `make build` on every push to `master` and on
-pull requests, then builds the Docker image with Buildx. Pushes to `master` publish it to
-`ghcr.io/d3n1el1/nx-cache-service` as `latest` and `<commit-sha>`; pull requests opened from this
-repository publish `pr-<sha>` and `pr-<number>-latest`, and pull requests from forks only build.
+pull requests, then builds the Docker image with Buildx. Only pushes to `master` publish it, to
+`ghcr.io/d3n1el1/nx-cache-service` as `latest` and `<commit-sha>`; pull requests build the image
+without pushing it.
 
 See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for code style, how to verify a change, and the pull request process.
 
