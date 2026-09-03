@@ -43,7 +43,7 @@ docker run -d --name nx-cache-service \
 Images are published to `ghcr.io/d3n1el1/nx-cache-service` on every push to `master`. `latest` follows
 the newest `master` build; every build is also tagged with its commit SHA, so pin
 `ghcr.io/d3n1el1/nx-cache-service:<commit-sha>` in production and upgrade deliberately. The images are
-`linux/amd64`.
+built for `linux/amd64` and `linux/arm64`.
 
 Drop `S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY` when the host already provides credentials (instance
 role, `AWS_*` environment variables, mounted `~/.aws/config`) — the AWS SDK's default credential chain

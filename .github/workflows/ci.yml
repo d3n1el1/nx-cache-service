@@ -31,6 +31,8 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - uses: docker/setup-qemu-action@v4
+
       - uses: docker/setup-buildx-action@v4
 
       - name: Resolve image tags
@@ -75,6 +77,7 @@ jobs:
       - uses: docker/build-push-action@v7
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: ${{ steps.image.outputs.push == 'true' }}
           tags: ${{ steps.image.outputs.tags }}
           labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
