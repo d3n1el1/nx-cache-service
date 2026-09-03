@@ -28,8 +28,6 @@ store is included for development.
 Run the service in Docker, backed by an S3 bucket:
 
 ```bash
-docker build -t nx-cache-service .
-
 docker run -d --name nx-cache-service \
   -p 8080:8080 \
   -e CI_TOKEN=replace-with-a-strong-token \
@@ -39,11 +37,13 @@ docker run -d --name nx-cache-service \
   -e S3_REGION=eu-central-1 \
   -e S3_ACCESS_KEY_ID=<your-access-key-id> \
   -e S3_SECRET_ACCESS_KEY=<your-secret-access-key> \
-  nx-cache-service
+  ghcr.io/d3n1el1/nx-cache-service:latest
 ```
 
-CI is wired to publish `ghcr.io/d3n1el1/nx-cache-service`, but pushing is currently disabled, so build
-the image locally for now.
+Images are published to `ghcr.io/d3n1el1/nx-cache-service` on every push to `master`. `latest` follows
+the newest `master` build; every build is also tagged with its commit SHA, so pin
+`ghcr.io/d3n1el1/nx-cache-service:<commit-sha>` in production and upgrade deliberately. The images are
+`linux/amd64`.
 
 Drop `S3_ACCESS_KEY_ID` and `S3_SECRET_ACCESS_KEY` when the host already provides credentials (instance
 role, `AWS_*` environment variables, mounted `~/.aws/config`) — the AWS SDK's default credential chain
@@ -200,7 +200,9 @@ make clean      # remove bin/
 ```
 
 CI (`.github/workflows/ci.yml`) runs `make check` and `make build` on every push to `master` and on
-pull requests, then builds the Docker image with Buildx.
+pull requests, then builds the Docker image with Buildx. Pushes to `master` publish it to
+`ghcr.io/d3n1el1/nx-cache-service` as `latest` and `<commit-sha>`; pull requests opened from this
+repository publish `pr-<sha>` and `pr-<number>-latest`, and pull requests from forks only build.
 
 See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for code style, how to verify a change, and the pull request process.
 
